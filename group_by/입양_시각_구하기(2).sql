@@ -1,16 +1,13 @@
-WITH RECURSIVE tmp AS (
-    SELECT 0 AS rnum
+WITH RECURSIVE time AS (
+    SELECT 0 AS hour
     UNION ALL
-    SELECT rnum + 1 FROM tmp
-    WHERE rnum < 23
+    SELECT hour + 1 FROM time
+    WHERE hour < 23
 )
 
-SELECT rnum AS RNUM, IF (a.count IS NULL, 0, a.count) AS count
-FROM tmp AS t
-LEFT JOIN (
-    SELECT HOUR(datetime) AS hour, count(*) AS count
-    FROM animal_outs
-    GROUP BY HOUR(datetime)
-) AS a
-ON t.rnum = a.hour
+SELECT t.hour, COUNT(a.datetime) AS COUNT
+FROM time AS t
+LEFT JOIN animal_outs AS a
+ON t.hour = HOUR(a.datetime)
+GROUP BY t.hour
 ORDER BY 1
